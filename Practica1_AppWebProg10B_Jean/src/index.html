@@ -15,29 +15,22 @@
 <body>
 
     <div class="container">
-        <form class="addUser">
+        <form id="formUser" method="POST">
             <h3>Crea un usuario</h3>
-
-            <input type="text" name="first_name" placeholder="Ingresa tu nombre">
+            <input type="text" id="name" placeholder="Ingresa tu nombre">
             <br>
-            <input type="text" name="last_name" placeholder="Ingresa tu apellido">
+            <input type="text" id="job" placeholder="Ingresa tu trabajo">
             <br>
-            <input type="text" name="email" placeholder="Ingresa tu email">
-            <br>
-            <input type="text" name="avatar" placeholder="Ingresa la imagen">
-            <br>
-            <input type="submit" name="submit" value="Crear usuario" class="submit">
+            <input type="submit" value="Add"/>
         </form>
     </div>
 
     <div class="container">
-        <div class="row">
-            <div id="divuser">
-                
-            </div>
+        <div class="row justify-content-center" id="divuser">
+
         </div>
     </div>
-    
+
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
@@ -55,14 +48,12 @@
         fetch('https://reqres.in/api/users')
             .then(res => res.json())
             .then(renderUsers);
-            
-
 
         const userCollection = document.getElementById('divuser')
         function renderUsers(users) {
             (users.data).forEach(function (user) {
                 userCollection.innerHTML += `
-                <div class="card" style="width: 18rem;">
+                <div class="card mb-3" style="width: 18rem;">
                     <img class="card-img-top" src="${user.avatar}" alt="Card image cap">
                     <div class="card-body">
                         <h5 class="card-title">${user.first_name} ${user.last_name}</h5>
@@ -72,27 +63,32 @@
             })
         }
 
-        const addUserForm = document.querySelector('.addUser')
-        addUserForm.addEventListener('submit', function (event) {
-            fetch(`https://reqres.in/api/users`, {
+
+        var formUser = document.getElementById('formUser')
+        formUser.addEventListener('submit', function (event) {
+            event.preventDefault()
+            var name = document.getElementById('name').value
+            var job = document.getElementById('job').value
+            fetch('https://reqres.in/api/users', {
                 method: 'POST',
                 body: JSON.stringify({
-                    email: `${event.target.email.value}`,
-                    first_name: `${event.target.first_name.value}`,
-                    last_name: `${event.target.last_name.value}`,
-                    avatar: `${event.target.avatar.value}`,
+                    name: name,
+                    job: job,
                 }),
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-type': 'application/json; charset=UTF-8',
                 }
+            }).then(function (response) {
+                return response.json()
             })
-                .then(res => res.json())
-                .then(data => console.log(data))
-                .then(renderUsers);
-        })
-
-            
-
+                .then(function (data) {
+                    console.log(data)
+                    name = document.getElementById("name")
+                    job = document.getElementById("job")
+                    name.innerHTML = data.name
+                    job.innerHTML = data.job
+                }).catch(error => console.error('Error:', error));
+        });
 
     </script>
 </body>
